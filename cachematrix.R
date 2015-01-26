@@ -14,9 +14,11 @@ makeCacheMatrix <- function(x = matrix()) {
   get <- function() x
   setsolve <- function(solve) s <<- solve
   getsolve <- function() s
+  getenv<- function() environment()
   list(set = set, get = get,
        setsolve = setsolve,
-       getsolve = getsolve)
+       getsolve = getsolve,
+       getenv = getenv)
 }
 
 
@@ -28,12 +30,12 @@ cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
   s <- x$getsolve()
   cur_x <- x$get()
-  if( (!is.null(s)) && (cur_x==x) ) {
+  if( (!is.null(s)) && (cur_x==parent.env(x$getenv())$x) ) {
     message("getting cached inverse")
     return(s)
   }
   s <- solve(cur_x, ...)
-  if(cur_x != x) {
+  if(cur_x != parent.env(x$getenv())$x) {
     x$set(cur_x)
   }
   x$setsolve(s)
